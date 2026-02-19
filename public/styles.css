@@ -1,17 +1,18 @@
 :root {
   color-scheme: light;
-  --bg: #f6f3ee;
+  --bg: #f3efe8;
   --panel: #ffffff;
-  --ink: #1d1b18;
-  --muted: #6b6257;
-  --accent: #c75c2c;
-  --accent-2: #2a6f7b;
-  --safe: #0f7b54;
-  --warn: #d39f12;
-  --danger: #c0392b;
-  --shadow: 0 18px 50px rgba(21, 18, 14, 0.12);
-  --radius: 18px;
-  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --ink: #1a1a1c;
+  --muted: #5b5d66;
+  --accent: #b34d2d;
+  --accent-2: #1f5c5b;
+  --accent-3: #f1c57a;
+  --safe: #0b7b53;
+  --warn: #d08b1f;
+  --danger: #b0302e;
+  --shadow: 0 24px 60px rgba(20, 20, 30, 0.12);
+  --radius: 20px;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
 }
 
 * {
@@ -20,7 +21,7 @@
 
 body {
   margin: 0;
-  background: radial-gradient(circle at top, #fff5e9 0%, var(--bg) 45%);
+  background: radial-gradient(circle at 15% 10%, #fff3e1 0%, var(--bg) 45%);
   color: var(--ink);
 }
 
@@ -29,6 +30,33 @@ body {
   display: flex;
   flex-direction: column;
   gap: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.page::before,
+.page::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  z-index: -1;
+  filter: blur(0px);
+}
+
+.page::before {
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(179, 77, 45, 0.2), transparent 70%);
+  top: -120px;
+  right: -120px;
+}
+
+.page::after {
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(31, 92, 91, 0.18), transparent 70%);
+  bottom: 40px;
+  left: -140px;
 }
 
 .hero {
@@ -36,6 +64,7 @@ body {
   gap: 24px;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   align-items: center;
+  animation: fadeUp 0.8s ease both;
 }
 
 .eyebrow {
@@ -47,8 +76,8 @@ body {
 }
 
 h1 {
-  font-family: "Playfair Display", serif;
-  font-size: clamp(2.2rem, 3.5vw, 3.4rem);
+  font-family: "Fraunces", serif;
+  font-size: clamp(2.4rem, 3.7vw, 3.8rem);
   margin: 10px 0;
 }
 
@@ -56,6 +85,33 @@ h1 {
   max-width: 560px;
   color: var(--muted);
   font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.hero-content {
+  display: grid;
+  gap: 16px;
+}
+
+.hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.hero-metrics div {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(31, 92, 91, 0.08);
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.hero-metrics span {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ink);
 }
 
 .hero-card {
@@ -63,11 +119,22 @@ h1 {
   padding: 24px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  border-left: 4px solid var(--accent);
+  border: 1px solid rgba(26, 26, 28, 0.08);
+  position: relative;
+}
+
+.hero-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(179, 77, 45, 0.25);
+  transform: translate(6px, 6px);
+  z-index: -1;
 }
 
 .badge {
-  background: rgba(199, 92, 44, 0.12);
+  background: rgba(179, 77, 45, 0.12);
   color: var(--accent);
   padding: 6px 12px;
   border-radius: 999px;
@@ -76,11 +143,30 @@ h1 {
   margin-bottom: 14px;
 }
 
+.hero-card-title {
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
 .panel {
   background: var(--panel);
   padding: 24px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  animation: fadeUp 0.8s ease both;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.panel-header p {
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.95rem;
 }
 
 .panel h2 {
@@ -95,7 +181,7 @@ h1 {
 }
 
 .dropzone {
-  border: 2px dashed rgba(42, 111, 123, 0.4);
+  border: 2px dashed rgba(31, 92, 91, 0.45);
   border-radius: var(--radius);
   padding: 30px;
   min-height: 170px;
@@ -103,17 +189,18 @@ h1 {
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  transition: border 0.2s ease, background 0.2s ease;
+  transition: border 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
 
 .dropzone:hover {
   border-color: var(--accent-2);
-  background: rgba(42, 111, 123, 0.05);
+  background: rgba(31, 92, 91, 0.06);
+  transform: translateY(-2px);
 }
 
 .dropzone.hover {
   border-color: var(--accent-2);
-  background: rgba(42, 111, 123, 0.08);
+  background: rgba(31, 92, 91, 0.1);
 }
 
 .dropzone input {
@@ -133,7 +220,7 @@ h1 {
 input[type="text"] {
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px solid rgba(29, 27, 24, 0.2);
+  border: 1px solid rgba(26, 26, 28, 0.2);
   font-size: 0.95rem;
 }
 
@@ -141,21 +228,44 @@ button {
   padding: 12px 16px;
   border-radius: 12px;
   border: none;
-  background: var(--accent);
+  background: linear-gradient(120deg, var(--accent), #d46a3c);
   color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 12px 24px rgba(179, 77, 45, 0.25);
 }
 
 button:hover {
   transform: translateY(-1px);
+  box-shadow: 0 16px 28px rgba(179, 77, 45, 0.3);
 }
 
 .status {
   margin-top: 16px;
   min-height: 24px;
   color: var(--muted);
+}
+
+.upload-status {
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.progress {
+  margin-top: 10px;
+  height: 10px;
+  background: rgba(26, 26, 28, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(120deg, var(--accent-2), var(--accent));
+  transition: width 0.2s ease;
 }
 
 .results {
@@ -166,8 +276,9 @@ button:hover {
 .result-card {
   padding: 20px;
   border-radius: 16px;
-  border: 1px solid rgba(29, 27, 24, 0.08);
-  background: linear-gradient(120deg, #fffaf2, #ffffff 70%);
+  border: 1px solid rgba(26, 26, 28, 0.08);
+  background: linear-gradient(120deg, #fff7eb, #ffffff 70%);
+  animation: fadeUp 0.7s ease both;
 }
 
 .result-card header {
@@ -182,6 +293,7 @@ button:hover {
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 600;
+  border: 1px solid rgba(26, 26, 28, 0.08);
 }
 
 .risk-safe {
@@ -217,7 +329,7 @@ details {
 }
 
 pre {
-  background: #f4efe8;
+  background: #f6f0e8;
   padding: 16px;
   border-radius: 12px;
   overflow-x: auto;
@@ -235,9 +347,32 @@ pre {
   margin: 0;
 }
 
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero,
+  .panel,
+  .result-card {
+    animation: none;
+  }
+}
+
 @media (max-width: 700px) {
   .page {
     padding: 32px 6vw 70px;
+  }
+  .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
   .result-card header {
     flex-direction: column;

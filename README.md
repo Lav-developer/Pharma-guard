@@ -5,7 +5,7 @@ AI-powered web app for analyzing VCF files and predicting pharmacogenomic risks 
 ## Live Demo
 - Live project link: https://pharma-rift.netlify.app/
 - Live demo link: https://pharma-rift.netlify.app/
-- LinkedIn video link: https://demo.in
+- LinkedIn video link: https://www.linkedin.com/posts/lavkush-iet_rift2026-pharmaguard-pharmacogenomics-ugcPost-7430392205149687808-lH5O?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFKCXzUB2s9ddr85YgZdMHgJ7Di3y-JvFFE
 
 ## Architecture Overview
 - Frontend: Static HTML/CSS/JS served from Netlify.
