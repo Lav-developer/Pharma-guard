@@ -1,0 +1,11 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=PASS,Description="All filters passed">
+##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">
+##INFO=<ID=RS,Number=1,Type=String,Description="RSID">
+##INFO=<ID=STAR,Number=1,Type=String,Description="Star allele">
+##INFO=<ID=CONSEQUENCE,Number=1,Type=String,Description="Variant consequence">
+##INFO=<ID=CLINICAL_SIGNIFICANCE,Number=1,Type=String,Description="Clinical significance">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+22	42128945	rs3892097	C	T	100	PASS	GENE=CYP2D6;RS=rs3892097;STAR=*4;CONSEQUENCE=splice_acceptor_variant;CLINICAL_SIGNIFICANCE=No_Function
+10	94942212	rs1799853	C	T	100	PASS	GENE=CYP2C9;RS=rs1799853;STAR=*2;CONSEQUENCE=missense_variant;CLINICAL_SIGNIFICANCE=Decreased_Function
+19	47177570	rs4149056	T	C	100	PASS	GENE=SLCO1B1;RS=rs4149056;STAR=*5;CONSEQUENCE=missense_variant;CLINICAL_SIGNIFICANCE=Low_Function
