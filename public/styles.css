@@ -1,0 +1,249 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f3ee;
+  --panel: #ffffff;
+  --ink: #1d1b18;
+  --muted: #6b6257;
+  --accent: #c75c2c;
+  --accent-2: #2a6f7b;
+  --safe: #0f7b54;
+  --warn: #d39f12;
+  --danger: #c0392b;
+  --shadow: 0 18px 50px rgba(21, 18, 14, 0.12);
+  --radius: 18px;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #fff5e9 0%, var(--bg) 45%);
+  color: var(--ink);
+}
+
+.page {
+  padding: 48px 7vw 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.hero {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  align-items: center;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 0.72rem;
+  color: var(--accent-2);
+  font-weight: 600;
+}
+
+h1 {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(2.2rem, 3.5vw, 3.4rem);
+  margin: 10px 0;
+}
+
+.subhead {
+  max-width: 560px;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.hero-card {
+  background: var(--panel);
+  padding: 24px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border-left: 4px solid var(--accent);
+}
+
+.badge {
+  background: rgba(199, 92, 44, 0.12);
+  color: var(--accent);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.panel {
+  background: var(--panel);
+  padding: 24px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.panel h2 {
+  font-size: 1.3rem;
+  margin-top: 0;
+}
+
+.upload-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.dropzone {
+  border: 2px dashed rgba(42, 111, 123, 0.4);
+  border-radius: var(--radius);
+  padding: 30px;
+  min-height: 170px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: border 0.2s ease, background 0.2s ease;
+}
+
+.dropzone:hover {
+  border-color: var(--accent-2);
+  background: rgba(42, 111, 123, 0.05);
+}
+
+.dropzone.hover {
+  border-color: var(--accent-2);
+  background: rgba(42, 111, 123, 0.08);
+}
+
+.dropzone input {
+  display: none;
+}
+
+.dropzone span {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.form-stack {
+  display: grid;
+  gap: 12px;
+}
+
+input[type="text"] {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(29, 27, 24, 0.2);
+  font-size: 0.95rem;
+}
+
+button {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+.status {
+  margin-top: 16px;
+  min-height: 24px;
+  color: var(--muted);
+}
+
+.results {
+  display: grid;
+  gap: 18px;
+}
+
+.result-card {
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(29, 27, 24, 0.08);
+  background: linear-gradient(120deg, #fffaf2, #ffffff 70%);
+}
+
+.result-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.risk-badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.risk-safe {
+  background: rgba(15, 123, 84, 0.14);
+  color: var(--safe);
+}
+
+.risk-adjust {
+  background: rgba(211, 159, 18, 0.15);
+  color: var(--warn);
+}
+
+.risk-toxic,
+.risk-ineffective {
+  background: rgba(192, 57, 43, 0.15);
+  color: var(--danger);
+}
+
+.result-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+  color: var(--muted);
+}
+
+.result-meta strong {
+  color: var(--ink);
+}
+
+details {
+  margin-top: 14px;
+}
+
+pre {
+  background: #f4efe8;
+  padding: 16px;
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 32px 6vw 70px;
+  }
+  .result-card header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .actions {
+    flex-direction: column;
+  }
+}

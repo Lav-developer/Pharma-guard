@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PharmacoGenomics Risk Analyzer</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Precision Medicine</p>
+          <h1>Pharmacogenomics Risk Analyzer</h1>
+          <p class="subhead">
+            Upload a VCF file, choose a drug, and receive a structured
+            pharmacogenomic risk assessment with clinically actionable guidance.
+          </p>
+        </div>
+        <div class="hero-card">
+          <div class="badge">CPIC-aligned</div>
+          <p>
+            Supports CYP2D6, CYP2C19, CYP2C9, SLCO1B1, TPMT, and DPYD with
+            drug-specific recommendations.
+          </p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Upload Patient Data</h2>
+        <div class="upload-grid">
+          <label class="dropzone" id="dropzone">
+            <input type="file" id="vcfInput" accept=".vcf" />
+            <div>
+              <p>Drop VCF here or click to browse</p>
+              <span>Max 5 MB, VCF v4.2</span>
+            </div>
+          </label>
+          <div class="form-stack">
+            <label for="drugInput">Drug names</label>
+            <input
+              id="drugInput"
+              type="text"
+              placeholder="CODEINE, WARFARIN"
+            />
+            <p class="hint">
+              Supported: Codeine, Warfarin, Clopidogrel, Simvastatin,
+              Azathioprine, Fluorouracil
+            </p>
+            <button id="analyzeBtn">Analyze</button>
+          </div>
+        </div>
+        <div class="status" id="status"></div>
+      </section>
+
+      <section class="panel results" id="results"></section>
+    </main>
+
+    <template id="resultTemplate">
+      <article class="result-card">
+        <header>
+          <div>
+            <h3 class="drug-name"></h3>
+            <p class="patient"></p>
+          </div>
+          <span class="risk-badge"></span>
+        </header>
+        <div class="result-meta"></div>
+        <details>
+          <summary>Detailed profile</summary>
+          <pre class="json"></pre>
+          <div class="actions">
+            <button class="copy-btn">Copy JSON</button>
+            <button class="download-btn">Download JSON</button>
+          </div>
+        </details>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
