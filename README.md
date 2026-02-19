@@ -1,4 +1,3 @@
-# PharmacoGenomics Risk Analyzer
 # PharmaGuard
 
 AI-powered web app for analyzing VCF files and predicting pharmacogenomic risks from VCF files and drug names.
