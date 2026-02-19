@@ -1,17 +1,3 @@
-import express from "express";
-import multer from "multer";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const app = express();
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }
-});
-
 const SUPPORTED_DRUGS = [
   "CODEINE",
   "WARFARIN",
@@ -29,61 +15,6 @@ const TARGET_GENES = [
   "TPMT",
   "DPYD"
 ];
-
-app.use(express.static(path.join(__dirname, "../public")));
-
-app.post("/api/analyze", upload.single("vcf"), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: "VCF file is required." });
-    }
-
-    const drugsInput = String(req.body.drugs || "").trim();
-    if (!drugsInput) {
-      return res.status(400).json({ error: "Drug name is required." });
-    }
-
-    const requestedDrugs = drugsInput
-      .split(",")
-      .map((d) => d.trim().toUpperCase())
-      .filter(Boolean);
-
-    const invalidDrugs = requestedDrugs.filter(
-      (d) => !SUPPORTED_DRUGS.includes(d)
-    );
-
-    if (invalidDrugs.length) {
-      return res.status(400).json({
-        error: `Unsupported drug(s): ${invalidDrugs.join(", ")}.`
-      });
-    }
-
-    const vcfText = req.file.buffer.toString("utf8");
-    const parseResult = parseVcf(vcfText);
-    if (!parseResult.success) {
-      return res.status(400).json({ error: parseResult.error });
-    }
-
-    const { patientId, geneVariants, variantsFound } = parseResult;
-
-    const analysisResults = [];
-    for (const drug of requestedDrugs) {
-      const result = buildResult({
-        patientId,
-        drug,
-        geneVariants,
-        variantsFound
-      });
-      const llm = await generateExplanation(result);
-      result.llm_generated_explanation = llm;
-      analysisResults.push(result);
-    }
-
-    res.json(analysisResults);
-  } catch (error) {
-    res.status(500).json({ error: "Unexpected server error." });
-  }
-});
 
 function parseVcf(text) {
   const lines = text.split(/\r?\n/).filter((line) => line.length > 0);
@@ -155,45 +86,6 @@ function parseInfo(info) {
     map[key] = value ?? true;
   }
   return map;
-}
-
-function buildResult({ patientId, drug, geneVariants, variantsFound }) {
-  const gene = drugToGene(drug);
-  const variants = geneVariants.get(gene) || [];
-  const { diplotype, phenotype, detectedVariants } = inferDiplotype(
-    gene,
-    variants
-  );
-  const risk = assessRisk(drug, gene, phenotype, detectedVariants);
-  const recommendation = buildRecommendation(drug, gene, phenotype, risk);
-
-  return {
-    patient_id: patientId,
-    drug,
-    timestamp: new Date().toISOString(),
-    risk_assessment: risk,
-    pharmacogenomic_profile: {
-      primary_gene: gene,
-      diplotype,
-      phenotype,
-      detected_variants: detectedVariants
-    },
-    clinical_recommendation: recommendation,
-    llm_generated_explanation: {
-      summary: "",
-      mechanism: "",
-      evidence: "",
-      citations: []
-    },
-    quality_metrics: {
-      vcf_parsing_success: true,
-      variants_found: variantsFound,
-      gene_variants_found: detectedVariants.length,
-      genes_covered: Array.from(geneVariants.keys()).filter(
-        (g) => geneVariants.get(g).length > 0
-      )
-    }
-  };
 }
 
 function drugToGene(drug) {
@@ -426,6 +318,45 @@ function buildRecommendation(drug, gene, phenotype, risk) {
   };
 }
 
+function buildResult({ patientId, drug, geneVariants, variantsFound }) {
+  const gene = drugToGene(drug);
+  const variants = geneVariants.get(gene) || [];
+  const { diplotype, phenotype, detectedVariants } = inferDiplotype(
+    gene,
+    variants
+  );
+  const risk = assessRisk(drug, gene, phenotype, detectedVariants);
+  const recommendation = buildRecommendation(drug, gene, phenotype, risk);
+
+  return {
+    patient_id: patientId,
+    drug,
+    timestamp: new Date().toISOString(),
+    risk_assessment: risk,
+    pharmacogenomic_profile: {
+      primary_gene: gene,
+      diplotype,
+      phenotype,
+      detected_variants: detectedVariants
+    },
+    clinical_recommendation: recommendation,
+    llm_generated_explanation: {
+      summary: "",
+      mechanism: "",
+      evidence: "",
+      citations: []
+    },
+    quality_metrics: {
+      vcf_parsing_success: true,
+      variants_found: variantsFound,
+      gene_variants_found: detectedVariants.length,
+      genes_covered: Array.from(geneVariants.keys()).filter(
+        (g) => geneVariants.get(g).length > 0
+      )
+    }
+  };
+}
+
 async function generateExplanation(result) {
   const apiKey = process.env.GEMINI_API_KEY;
   const variants = result.pharmacogenomic_profile.detected_variants || [];
@@ -500,4 +431,121 @@ async function generateExplanation(result) {
   }
 }
 
-export default app;
+exports.handler = async (event, context) => {
+  // Handle CORS
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type"
+  };
+
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 200, headers };
+  }
+
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      headers,
+      body: JSON.stringify({ error: "Method not allowed" })
+    };
+  }
+
+  try {
+    // Parse form data
+    const body = event.body;
+    const isBase64 = event.isBase64Encoded;
+    const bodyBuffer = isBase64 ? Buffer.from(body, "base64") : Buffer.from(body);
+    const bodyStr = bodyBuffer.toString("utf8");
+
+    // Simple multipart parser
+    const boundary = bodyStr.split("\r\n")[0];
+    const parts = bodyStr.split(boundary);
+
+    let vcfContent = "";
+    let drugs = "";
+
+    for (const part of parts) {
+      if (part.includes('name="vcf"')) {
+        const match = part.match(/\r\n\r\n([\s\S]*?)\r\n/);
+        if (match) vcfContent = match[1];
+      }
+      if (part.includes('name="drugs"')) {
+        const match = part.match(/\r\n\r\n([\s\S]*?)\r\n/);
+        if (match) drugs = match[1];
+      }
+    }
+
+    if (!vcfContent) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: "VCF file is required." })
+      };
+    }
+
+    if (!drugs) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: "Drug name is required." })
+      };
+    }
+
+    const requestedDrugs = drugs
+      .split(",")
+      .map((d) => d.trim().toUpperCase())
+      .filter(Boolean);
+
+    const invalidDrugs = requestedDrugs.filter(
+      (d) => !SUPPORTED_DRUGS.includes(d)
+    );
+
+    if (invalidDrugs.length) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          error: `Unsupported drug(s): ${invalidDrugs.join(", ")}.`
+        })
+      };
+    }
+
+    const parseResult = parseVcf(vcfContent);
+    if (!parseResult.success) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: parseResult.error })
+      };
+    }
+
+    const { patientId, geneVariants, variantsFound } = parseResult;
+
+    const analysisResults = [];
+    for (const drug of requestedDrugs) {
+      const result = buildResult({
+        patientId,
+        drug,
+        geneVariants,
+        variantsFound
+      });
+      const llm = await generateExplanation(result);
+      result.llm_generated_explanation = llm;
+      analysisResults.push(result);
+    }
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify(analysisResults)
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: "Unexpected server error." })
+    };
+  }
+};

@@ -4,6 +4,6 @@
   publish = "public"
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
+  from = "/api/analyze"
+  to = "/.netlify/functions/analyze"
   status = 200
