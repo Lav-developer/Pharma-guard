@@ -122,6 +122,24 @@
       </article>
     </template>
 
+    <template id="skeletonTemplate">
+      <article class="skeleton-card">
+        <div class="skeleton-header">
+          <div style="flex: 1;">
+            <div class="skeleton-title"></div>
+            <div class="skeleton-row" style="width: 50%; margin-top: 8px;"></div>
+          </div>
+          <div class="skeleton-badge"></div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+        </div>
+      </article>
+    </template>
+
     <script src="app.js"></script>
   </body>
 </html>

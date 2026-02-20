@@ -6,6 +6,7 @@ const uploadStatusEl = document.getElementById("uploadStatus");
 const progressBar = document.getElementById("progressBar");
 const resultsEl = document.getElementById("results");
 const template = document.getElementById("resultTemplate");
+const skeletonTemplate = document.getElementById("skeletonTemplate");
 const dropzone = document.getElementById("dropzone");
 
 const SUPPORTED_DRUGS = [
@@ -101,6 +102,28 @@ function setButtonState(disabled, isLoading = false) {
 function setProgress(value) {
   const clamped = Math.max(0, Math.min(100, value));
   progressBar.style.width = `${clamped}%`;
+  
+  // Add pulsing effect when loading
+  if (clamped > 0 && clamped < 100) {
+    progressBar.classList.add("loading");
+  } else {
+    progressBar.classList.remove("loading");
+  }
+}
+
+function showSkeletonLoaders(count = 3) {
+  resultsEl.innerHTML = "";
+  resultsEl.classList.add("loading");
+  
+  for (let i = 0; i < count; i++) {
+    const skeleton = skeletonTemplate.content.cloneNode(true);
+    resultsEl.appendChild(skeleton);
+  }
+}
+
+function clearResults() {
+  resultsEl.innerHTML = "";
+  resultsEl.classList.remove("loading");
 }
 
 function normalizeDrugs(input) {
@@ -216,12 +239,24 @@ async function analyze() {
   formData.append("drugs", drugs.join(","));
 
   try {
+    // Show skeleton loaders while waiting
+    const resultCount = drugs.length;
+    showSkeletonLoaders(resultCount);
+    
+    // Simulate delay for skeleton to be visible (remove in production if API is fast enough)
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
     const data = await sendWithProgress(formData);
+    
+    // Clear skeletons and render real results
+    clearResults();
     renderResults(Array.isArray(data) ? data : [data]);
+    
     setStatus("✓ Analysis complete.", "success");
     setUploadStatus(`✓ Uploaded: ${file.name}`);
     setProgress(100);
   } catch (error) {
+    clearResults();
     setStatus(error.message, "error");
     setUploadStatus("Upload failed.");
     setProgress(0);
