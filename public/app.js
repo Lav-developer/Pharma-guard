@@ -43,9 +43,19 @@ function safeValue(value, fallbackList) {
   return value;
 }
 
-function setStatus(message, isError = false) {
+function setStatus(message, statusType = "info") {
   statusEl.textContent = message;
-  statusEl.style.color = isError ? "#c0392b" : "#6b6257";
+  statusEl.className = "status " + statusType;
+  
+  // Auto-clear success messages after 5 seconds
+  if (statusType === "success") {
+    setTimeout(() => {
+      if (statusEl.textContent === message) {
+        statusEl.textContent = "";
+        statusEl.className = "status";
+      }
+    }, 5000);
+  }
 }
 
 function riskClass(label) {
@@ -70,6 +80,22 @@ function validateFile(file) {
 
 function setUploadStatus(message) {
   uploadStatusEl.textContent = message;
+  if (message !== "No file selected." && message !== "Upload failed.") {
+    uploadStatusEl.classList.add("file-selected");
+  } else {
+    uploadStatusEl.classList.remove("file-selected");
+  }
+}
+
+function setButtonState(disabled, isLoading = false) {
+  analyzeBtn.disabled = disabled;
+  if (isLoading) {
+    analyzeBtn.classList.add("loading");
+    analyzeBtn.textContent = "Analyzing";
+  } else {
+    analyzeBtn.classList.remove("loading");
+    analyzeBtn.textContent = "Analyze";
+  }
 }
 
 function setProgress(value) {
@@ -138,8 +164,12 @@ function renderResults(results) {
     json.textContent = JSON.stringify(result, null, 2);
 
     copyBtn.addEventListener("click", async () => {
-      await navigator.clipboard.writeText(json.textContent);
-      setStatus("JSON copied to clipboard.");
+      try {
+        await navigator.clipboard.writeText(json.textContent);
+        setStatus("✓ JSON copied to clipboard.", "success");
+      } catch {
+        setStatus("Failed to copy. Try again.", "error");
+      }
     });
 
     downloadBtn.addEventListener("click", () => {
@@ -162,18 +192,22 @@ async function analyze() {
   const file = vcfInput.files[0];
   const fileError = validateFile(file);
   if (fileError) {
-    setStatus(fileError, true);
+    setStatus(fileError, "error");
     return;
   }
 
   const drugs = normalizeDrugs(drugInput.value);
   const drugError = validateDrugs(drugs);
   if (drugError) {
-    setStatus(drugError, true);
+    drugInput.classList.add("error");
+    setStatus(drugError, "error");
     return;
+  } else {
+    drugInput.classList.remove("error");
   }
 
-  setStatus("Uploading and analyzing...");
+  setButtonState(true, true);
+  setStatus("Uploading and analyzing...", "info");
   setUploadStatus(`Uploading ${file.name}...`);
   setProgress(0);
 
@@ -184,13 +218,15 @@ async function analyze() {
   try {
     const data = await sendWithProgress(formData);
     renderResults(Array.isArray(data) ? data : [data]);
-    setStatus("Analysis complete.");
-    setUploadStatus("Uploaded.");
+    setStatus("✓ Analysis complete.", "success");
+    setUploadStatus(`✓ Uploaded: ${file.name}`);
     setProgress(100);
   } catch (error) {
-    setStatus(error.message, true);
+    setStatus(error.message, "error");
     setUploadStatus("Upload failed.");
     setProgress(0);
+  } finally {
+    setButtonState(false, false);
   }
 }
 
@@ -232,31 +268,57 @@ analyzeBtn.addEventListener("click", analyze);
 ["dragenter", "dragover"].forEach((eventName) => {
   dropzone.addEventListener(eventName, (event) => {
     event.preventDefault();
-    dropzone.classList.add("hover");
+    event.stopPropagation();
+    dropzone.classList.add("drag-over");
   });
 });
 
 ["dragleave", "drop"].forEach((eventName) => {
   dropzone.addEventListener(eventName, (event) => {
     event.preventDefault();
-    dropzone.classList.remove("hover");
+    event.stopPropagation();
+    dropzone.classList.remove("drag-over");
   });
 });
 
-
 dropzone.addEventListener("drop", (event) => {
-  const file = event.dataTransfer.files[0];
-  if (file) {
-    vcfInput.files = event.dataTransfer.files;
-    setUploadStatus(`Selected: ${file.name}`);
+  const files = event.dataTransfer.files;
+  if (files.length > 0) {
+    const file = files[0];
+    const error = validateFile(file);
+    
+    if (error) {
+      setStatus(error, "error");
+      setUploadStatus("Invalid file.");
+    } else {
+      vcfInput.files = files;
+      setUploadStatus(`✓ Selected: ${file.name}`);
+      drugInput.focus(); // Auto-focus next field
+      setStatus("", "info"); // Clear any error
+    }
   }
 });
 
 vcfInput.addEventListener("change", () => {
   const file = vcfInput.files[0];
   if (file) {
-    setUploadStatus(`Selected: ${file.name}`);
+    const error = validateFile(file);
+    if (error) {
+      setStatus(error, "error");
+      setUploadStatus("Invalid file.");
+    } else {
+      setUploadStatus(`✓ Selected: ${file.name}`);
+      setStatus("", "info"); // Clear any error
+    }
   } else {
     setUploadStatus("No file selected.");
+  }
+});
+
+// Clear input error on focus
+drugInput.addEventListener("focus", () => {
+  drugInput.classList.remove("error");
+  if (statusEl.classList.contains("error")) {
+    setStatus("", "info");
   }
 });

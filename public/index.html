@@ -47,24 +47,35 @@
 
       <section class="panel">
         <div class="panel-header">
-          <h2>Upload Patient Data</h2>
-          <p>Fast, private, and aligned to pharmacogenomic guidelines.</p>
+          <div>
+            <h2>Upload Patient Data</h2>
+            <p>Fast, private, and aligned to pharmacogenomic guidelines.</p>
+          </div>
         </div>
         <div class="upload-grid">
           <label class="dropzone" id="dropzone">
-            <input type="file" id="vcfInput" accept=".vcf" />
-            <div>
-              <p>Drop VCF here or click to browse</p>
-              <span>Max 5 MB, VCF v4.2</span>
+            <input type="file" id="vcfInput" accept=".vcf" aria-label="Upload VCF file" />
+            <div class="dropzone-content">
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="32" height="32">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <p class="dropzone-text">Drop VCF here or click to browse</p>
+                <span class="dropzone-hint">Max 5 MB, VCF v4.2</span>
+              </div>
             </div>
           </label>
           <div class="form-stack">
-            <label for="drugInput">Drug names</label>
+            <label for="drugInput">
+              <span>Drug names</span>
+              <span class="field-required" aria-label="required">*</span>
+            </label>
             <input
               id="drugInput"
               type="text"
-              placeholder="CODEINE, WARFARIN"
+              placeholder="e.g., CODEINE, WARFARIN"
               list="drugOptions"
+              aria-describedby="drugHint"
             />
             <datalist id="drugOptions">
               <option value="CODEINE"></option>
@@ -74,18 +85,17 @@
               <option value="AZATHIOPRINE"></option>
               <option value="FLUOROURACIL"></option>
             </datalist>
-            <p class="hint">
-              Supported: Codeine, Warfarin, Clopidogrel, Simvastatin,
-              Azathioprine, Fluorouracil
+            <p class="hint" id="drugHint">
+              Supported: Codeine, Warfarin, Clopidogrel, Simvastatin, Azathioprine, Fluorouracil
             </p>
-            <button id="analyzeBtn">Analyze</button>
+            <button id="analyzeBtn" aria-label="Analyze patient data">Analyze</button>
           </div>
         </div>
-        <div class="upload-status" id="uploadStatus">No file selected.</div>
+        <div class="upload-status" id="uploadStatus" aria-live="polite" aria-atomic="true">No file selected.</div>
         <div class="progress" aria-hidden="true">
           <div class="progress-bar" id="progressBar"></div>
         </div>
-        <div class="status" id="status"></div>
+        <div class="status" id="status" aria-live="polite" aria-atomic="true" role="alert"></div>
       </section>
 
       <section class="panel results" id="results"></section>
