@@ -25,10 +25,12 @@ const upload = multer({
 /* Middleware                                                          */
 /* ------------------------------------------------------------------ */
 
+// Note: X-Frame-Options is intentionally NOT set here so the app can be
+// embedded in sandboxed preview iframes during development. The Netlify
+// production config (netlify.toml) applies DENY for the deployed site.
 app.use((req, res, next) => {
   res.set({
     "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "DENY",
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
   });
