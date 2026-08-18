@@ -1,14 +1,23 @@
 {
-  "name": "pharmgpt-vcf-app",
-  "version": "1.0.0",
+  "name": "pharma-guard",
+  "version": "2.0.0",
+  "description": "AI-powered pharmacogenomic risk assessment from VCF files and drug names",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node --watch server.js",
+    "test": "node --test",
+    "bundle:check": "esbuild netlify/functions/analyze.js --bundle --platform=node --format=cjs --outfile=/tmp/pharmaguard-fn.cjs --log-level=warning"
   },
   "dependencies": {
     "express": "^4.19.2",
     "multer": "^2.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
   }
 }
