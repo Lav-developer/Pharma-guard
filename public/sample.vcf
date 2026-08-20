@@ -1,0 +1,23 @@
+##fileformat=VCFv4.2
+##fileDate=20260818
+##source=PharmaGuard_Demo_Pipeline_v1
+##reference=GRCh38.p13
+##INFO=<ID=RS,Number=1,Type=String,Description="dbSNP rsID">
+##INFO=<ID=GENE,Number=1,Type=String,Description="Gene symbol">
+##INFO=<ID=STAR,Number=1,Type=String,Description="Star allele designation">
+##INFO=<ID=CPIC,Number=1,Type=String,Description="CPIC guideline level">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##contig=<ID=chr1,length=248956422>
+##contig=<ID=chr6,length=170805979>
+##contig=<ID=chr10,length=133797422>
+##contig=<ID=chr12,length=133275309>
+##contig=<ID=chr22,length=50818468>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	DEMO_001
+chr1	97450058	rs3918290	C	T	99	PASS	RS=rs3918290;GENE=DPYD;STAR=*2A;CPIC=1A	GT	0/0
+chr6	18138997	rs1800462	C	G	99	PASS	RS=rs1800462;GENE=TPMT;STAR=*2;CPIC=1A	GT	0/1
+chr10	94781859	rs4244285	G	A	99	PASS	RS=rs4244285;GENE=CYP2C19;STAR=*2;CPIC=1A	GT	0/1
+chr10	94842866	rs12769205	A	G	99	PASS	RS=rs12769205;GENE=CYP2C19;STAR=*17;CPIC=1A	GT	0/0
+chr10	96702047	rs1057910	A	C	99	PASS	RS=rs1057910;GENE=CYP2C9;STAR=*3;CPIC=1A	GT	0/1
+chr12	21176804	rs4149056	T	C	99	PASS	RS=rs4149056;GENE=SLCO1B1;STAR=*5;CPIC=1A	GT	0/1
+chr22	42126611	rs28371725	C	T	99	PASS	RS=rs28371725;GENE=CYP2D6;STAR=*41;CPIC=1A	GT	0/0
+chr22	42128945	rs3892097	C	T	99	PASS	RS=rs3892097;GENE=CYP2D6;STAR=*4;CPIC=1A	GT	0/1
